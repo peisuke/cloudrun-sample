@@ -10,10 +10,6 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run: |
-          echo ${GCLOUD_SERVICE_KEY}
-      - run: |
-          echo ${GCLOUD_SERVICE_KEY} | base64 --decode
-      - run: |
           echo ${GCLOUD_SERVICE_KEY} | base64 --decode > client-secret.json
           gcloud auth activate-service-account --key-file client-secret.json
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
@@ -26,4 +22,4 @@ jobs:
       - run: |
           gcloud beta run deploy cloudrun-sample --allow-unauthenticated --memory 256Mi --region us-central1 --timeout 60 --image gcr.io/${GOOGLE_PROJECT_ID}/${IMAGE_NAME}
       - run: |
-         gcloud beta run services describe cvdash-manager --region=us-central1 --namespace=camerapaasdev
+         gcloud beta run services describe cloudrun-sample --region=us-central1 --namespace=cloudrunsample-243317
