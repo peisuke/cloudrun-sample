@@ -10,6 +10,10 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run: |
+          echo ${GCLOUD_SERVICE_KEY}
+      - run: |
+          echo ${GCLOUD_SERVICE_KEY} | base64 --decode
+      - run: |
           echo ${GCLOUD_SERVICE_KEY} | base64 --decode > client-secret.json
           gcloud auth activate-service-account --key-file client-secret.json
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
