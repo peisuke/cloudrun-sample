@@ -6,6 +6,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run: apt-get install -y build-essential
       - setup_remote_docker:
           version: 18.06.0-ce
       - run: |
