@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: google/cloud-sdk
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run: |
+          echo ${GCLOUD_SERVICE_KEY} | base64 --decode > client-secret.json
+          gcloud auth activate-service-account --key-file client-secret.json
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone us-central1-a
+          rm client-secret.json
+      - run: |
+          docker build -t gcr.io/${GOOGLE_PROJECT_ID}/${IMAGE_NAME} .
+      - run: |
+          gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/${IMAGE_NAME}
+      - run: |
+          gcloud beta run deploy cloudrun-sample --allow-unauthenticated --memory 256Mi --region us-central1 --timeout 60 --image gcr.io/${GOOGLE_PROJECT_ID}/${IMAGE_NAME}
+      - run: |
+         gcloud beta run services describe cvdash-manager --region=us-central1 --namespace=camerapaasdev
